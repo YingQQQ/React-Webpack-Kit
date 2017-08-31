@@ -6,6 +6,10 @@
   "repository": "https://github.com/YingQQQ/React-Webpack-Kit.git",
   "author": "Y",
   "license": "MIT",
+  "scripts": {
+    "start": "webpack-dev-server",
+    "build": "webpack"
+  },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
     "babel-core": "^6.26.0",
