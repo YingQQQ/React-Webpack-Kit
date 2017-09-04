@@ -31,15 +31,16 @@
     "html-webpack-plugin": "^2.30.1",
     "html-webpack-template": "^5.6.0",
     "koa-webpack": "^1.0.0",
-    "node-sass": "^4.5.3",
     "postcss-loader": "^2.0.6",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
     "url-loader": "^0.5.9",
     "webpack": "^3.5.5",
+    "webpack-dev-server": "^2.7.1",
     "webpack-merge": "^4.1.0"
   },
   "dependencies": {
+    "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-env": "^1.6.0",
     "ejs": "^2.5.7",
     "koa": "^2.3.0",
@@ -51,12 +52,12 @@
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0"
   },
-  "bableConfig": {
+  "babelConfig": {
     "presets": [
       "env",
       "react"
     ],
-    "plugin": [
+    "plugins": [
       "transform-runtime",
       "transform-class-properties"
     ]

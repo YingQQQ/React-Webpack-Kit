@@ -4,8 +4,9 @@ const {
 
 const ROOT = resolve(__dirname, '..');
 const Build = resolve(ROOT, 'build');
-const App = resolve(ROOT, 'src', 'app.js');
-const Style = resolve(ROOT, 'src', 'style');
+const App = resolve(ROOT, 'src', 'index.js');
+const Style = resolve(ROOT, 'src',
+  'style', 'index.scss');
 
 const path = {
   ROOT,

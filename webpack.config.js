@@ -11,26 +11,37 @@ const htmlTemplate = require('html-webpack-template');
 const IS_DEV = process.env.npm_lifecycle_event === 'start';
 const pkg = require('./package.json');
 
-const babelConfig = Object.assign({}, pkg.babel, {
+const babelConfig = Object.assign({}, pkg.babelConfig, {
   babelrc: false,
   cacheDirectory: IS_DEV,
-  presets: pkg.babel.presets.map(key => (key === 'env' ? ['env', {
+  presets: pkg.babelConfig.presets.map(key => (key === 'env' ? ['env', {
     targets: {
       browsers: ['last 2 versions', 'safari >= 7']
+    },
+    es2015: {
+      modules: false
     }
   }] : key))
 });
 
 let stylesLoader = [
   'style-loader',
-  'css-loader',
   {
-    loader: 'postcss-loader',
+    loader: 'css-loader',
     options: {
-      config: './postcss.config.js'
+      importLoaders: 1
     }
   },
-  'sass-loader',
+  'postcss-loader',
+  // {
+  //   loader: 'postcss-loader',
+  //   options: {
+  //     config: {
+  //       path: './postcss.config.js'
+  //     }
+  //   }
+  // },
+  'sass-loader'
 ];
 if (!IS_DEV) {
   const fallback = stylesLoader.shift();
@@ -44,14 +55,16 @@ if (!IS_DEV) {
 const config = {
   devtool: IS_DEV ? 'eval-source-map' : 'source-map',
   entry: {
-    app: Paths.App,
+    app: [
+      Paths.App
+    ],
     style: Paths.Style
   },
   output: {
     path: Paths.Build,
     chunkFilename: '[chunkhash].js',
     filename: IS_DEV ? '[name].js' : '[name].[chunkhash].js',
-    publicPath: './'
+    publicPath: '/'
   },
   module: {
     rules: [{
@@ -79,7 +92,7 @@ const config = {
       title: '项目名称',
       appMountId: 'app',
       inject: false,
-      favicon: './favicon.png',
+      favicon: './apple-icon-60x60.png',
       mobile: true,
     })
   ]

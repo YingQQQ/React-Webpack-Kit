@@ -1,8 +1,7 @@
-const autoprefixer = require('autoprefixer');
-module.exports = () => ({
+/* eslint-disable global-require */
+
+module.exports = {
   plugins: [
-    autoprefixer({
-      browsers: ['last 2 versions'],
-    })
-  ]
-});
+    require('autoprefixer')
+  ],
+};
