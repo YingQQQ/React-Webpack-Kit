@@ -8,6 +8,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Paths = require('./toolsConfig/path-help');
 const htmlTemplate = require('html-webpack-template');
 
+console.log(Paths.App);
+console.log(Paths.Style);
+
 const IS_DEV = process.env.npm_lifecycle_event === 'start';
 const pkg = require('./package.json');
 
@@ -18,9 +21,7 @@ const babelConfig = Object.assign({}, pkg.babelConfig, {
     targets: {
       browsers: ['last 2 versions', 'safari >= 7']
     },
-    es2015: {
-      modules: false
-    }
+    modules: false
   }] : key))
 });
 
@@ -32,16 +33,14 @@ let stylesLoader = [
       importLoaders: 1
     }
   },
-  'postcss-loader',
-  // {
-  //   loader: 'postcss-loader',
-  //   options: {
-  //     config: {
-  //       path: './postcss.config.js'
-  //     }
-  //   }
-  // },
-  'sass-loader'
+  {
+    loader: 'postcss-loader',
+    options: {
+      config: {
+        path: './postcss.config.js'
+      }
+    }
+  },
 ];
 if (!IS_DEV) {
   const fallback = stylesLoader.shift();
@@ -103,6 +102,7 @@ if (IS_DEV) {
     hot: true,
     inline: true,
     stats: 'errors-only',
+    publicPath: '/'
   };
   babelConfig.plugins.unshift('react-hot-loader/babel');
   config.entry.app.unshift('react-hot-loader/patch', 'webpack-dev-server/client?http://localhost:8080',

@@ -1,0 +1,20 @@
+$fontColor: #fff;
+$backgroundColor: #000;
+:root {
+  --mainColor: red;
+  --fontMainColor:$fontColor;
+}
+body {
+  background: $backgroundColor;
+  color: var(--fontMainColor);
+  p {
+    font-size: 20px;
+  }
+  li {
+    list-style-type: none;
+  }
+}
+
+a {
+  color: var(--mainColor);
+}

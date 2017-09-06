@@ -17,5 +17,5 @@ const renderDom = Component => render(
 renderDom(App);
 
 if (module.hot) {
-  module.hot.accept('./App', () => renderDom(App));
+  module.hot.accept('./containers/app', () => renderDom(App));
 }
