@@ -11,8 +11,10 @@ const htmlTemplate = require('html-webpack-template');
 console.log(Paths.App);
 console.log(Paths.Style);
 
-const IS_DEV = process.env.npm_lifecycle_event === 'start';
+const IS_DEV = process.env.NODE_ENV === 'development';
 const pkg = require('./package.json');
+
+console.log(`process.env.NODE_ENV:${IS_DEV}`);
 
 const babelConfig = Object.assign({}, pkg.babelConfig, {
   babelrc: false,
@@ -63,7 +65,7 @@ const config = {
     path: Paths.Build,
     chunkFilename: '[chunkhash].js',
     filename: IS_DEV ? '[name].js' : '[name].[chunkhash].js',
-    publicPath: '/'
+    publicPath: IS_DEV ? '/' : './'
   },
   module: {
     rules: [{

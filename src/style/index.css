@@ -1,20 +1,22 @@
-$fontColor: #fff;
-$backgroundColor: #000;
-:root {
-  --mainColor: red;
-  --fontMainColor:$fontColor;
+@import 'init.css';
+@custom-selector :--button button, .button;
+@custom-selector :--enter :hover, :focus;
+
+:--button {
+  outline: none;
 }
-body {
-  background: $backgroundColor;
-  color: var(--fontMainColor);
-  p {
-    font-size: 20px;
-  }
-  li {
-    list-style-type: none;
-  }
+:--button:--enter {
+  background: red;
 }
 
-a {
-  color: var(--mainColor);
+:root {
+  --toolbar-theme: {
+    background-color: rebeccapurple;
+    color: white;
+    border: 1px solid green;
+  };
+}
+
+.Toolbar {
+  @apply --toolbar-theme;
 }
