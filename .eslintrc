@@ -25,7 +25,8 @@
     "jsx-a11y/href-no-hash": "off",
     "jsx-a11y/anchor-is-valid": ["warn", { "aspects": ["invalidHref"] }],
     "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
-    "react/jsx-filename-extension": 0
+    "react/jsx-filename-extension": 0,
+    "globalReturn": true
   },
   "plugins": [
     "react", "import"

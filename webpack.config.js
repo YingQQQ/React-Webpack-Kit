@@ -5,7 +5,7 @@ const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const Paths = require('./toolsConfig/path-help');
+const Paths = require('./config/path-help');
 const htmlTemplate = require('html-webpack-template');
 
 console.log(Paths.App);
@@ -59,7 +59,9 @@ const config = {
     app: [
       Paths.App
     ],
-    style: Paths.Style
+    style:[
+       Paths.Style
+    ]
   },
   output: {
     path: Paths.Build,
@@ -99,28 +101,35 @@ const config = {
   ]
 };
 if (IS_DEV) {
-  config.devServer = {
-    historyApiFallback: true,
-    hot: true,
-    inline: true,
-    stats: 'errors-only',
-    publicPath: '/'
-  };
   babelConfig.plugins.unshift('react-hot-loader/babel');
-  config.entry.app.unshift('react-hot-loader/patch', 'webpack-dev-server/client?http://localhost:8080',
-    'webpack/hot/only-dev-server');
-  config.plugins.push(new webpack.NoEmitOnErrorsPlugin(), new webpack.HotModuleReplacementPlugin());
+
+  for(let key in config.entry) {
+    let currentItem = config.entry[key];
+      currentItem.unshift('webpack-hot-middleware/client?http://localhost:8080',
+      'webpack/hot/only-dev-server');
+      if (key === 'app' ) {
+        currentItem.unshift('react-hot-loader/patch')
+      }
+  }
+  config.plugins.push(
+    new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.HotModuleReplacementPlugin());
 } else {
-  config.plugins.push(new CleanWebpackPlugin([Paths.Build], {
+  config.plugins.push(
+    new CleanWebpackPlugin([Paths.Build], {
     root: process.cwd()
-  }), new webpack.optimize.CommonsChunkPlugin({
+  }),
+    new webpack.optimize.CommonsChunkPlugin({
     names: [
       ['react', 'react-dom'], 'manifest'
     ],
     minChunks: Infinity
-  }), new webpack.LoaderOptionsPlugin({
+  }),
+    new webpack.LoaderOptionsPlugin({
     minimize: true
-  }), new ExtractTextPlugin('[name].[chunkhash].css'), new webpack.optimize.UglifyJsPlugin({
+  }),
+    new ExtractTextPlugin('[name].[chunkhash].css'),
+    new webpack.optimize.UglifyJsPlugin({
     sourceMap: true,
     compress: {
       warnings: false,

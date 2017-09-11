@@ -10,7 +10,7 @@ try {
       targets: {
         node: true
       },
-    }] : null))
+    }] : key))
   });
 } catch (err) {
   console.error('==>     ERROR: Error parsing your .babelrc or config babelrc in pkg');
