@@ -59,8 +59,8 @@ const config = {
     app: [
       Paths.App
     ],
-    style:[
-       Paths.Style
+    style: [
+      Paths.Style
     ]
   },
   output: {
@@ -102,38 +102,38 @@ const config = {
 };
 if (IS_DEV) {
   babelConfig.plugins.unshift('react-hot-loader/babel');
-
-  for(let key in config.entry) {
-    let currentItem = config.entry[key];
-      currentItem.unshift('webpack-hot-middleware/client?http://localhost:8080',
+  const keys = Object.keys(config.entry);
+  keys.forEach((key) => {
+    const currentItem = config.entry[key];
+    currentItem.unshift('webpack-hot-middleware/client?http://localhost:8080',
       'webpack/hot/only-dev-server');
-      if (key === 'app' ) {
-        currentItem.unshift('react-hot-loader/patch')
-      }
-  }
+    if (key === 'app') {
+      currentItem.unshift('react-hot-loader/patch');
+    }
+  });
   config.plugins.push(
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.HotModuleReplacementPlugin());
 } else {
   config.plugins.push(
     new CleanWebpackPlugin([Paths.Build], {
-    root: process.cwd()
-  }),
+      root: process.cwd()
+    }),
     new webpack.optimize.CommonsChunkPlugin({
-    names: [
-      ['react', 'react-dom'], 'manifest'
-    ],
-    minChunks: Infinity
-  }),
+      names: [
+        ['react', 'react-dom'], 'manifest'
+      ],
+      minChunks: Infinity
+    }),
     new webpack.LoaderOptionsPlugin({
-    minimize: true
-  }),
+      minimize: true
+    }),
     new ExtractTextPlugin('[name].[chunkhash].css'),
     new webpack.optimize.UglifyJsPlugin({
-    sourceMap: true,
-    compress: {
-      warnings: false,
-    }
-  }));
+      sourceMap: true,
+      compress: {
+        warnings: false,
+      }
+    }));
 }
 module.exports = config;

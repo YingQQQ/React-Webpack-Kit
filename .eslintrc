@@ -2,8 +2,7 @@
   "extends": "eslint-config-airbnb",
   "env": {
     "browser": true,
-    "node": true,
-    "mocha": true
+    "node": true
   },
   "rules": {
     "new-cap": [2, {
@@ -23,20 +22,23 @@
     "no-console": 0,
     "no-alert": 0,
     "jsx-a11y/href-no-hash": "off",
-    "jsx-a11y/anchor-is-valid": ["warn", { "aspects": ["invalidHref"] }],
-    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
-    "react/jsx-filename-extension": 0,
-    "globalReturn": true
+    "jsx-a11y/anchor-is-valid": ["warn", {
+      "aspects": ["invalidHref"]
+    }],
+    "import/no-extraneous-dependencies": ["error", {
+      "devDependencies": true
+    }],
+    "react/jsx-filename-extension": 0
   },
   "plugins": [
     "react", "import"
   ],
   "settings": {
-    "import/parser": "babel-eslint",
     "import/resolve": {
       "moduleDirectory": ["node_modules", "src"]
     }
   },
+  "parser": "babel-eslint",
   "globals": {
     "__DEVELOPMENT__": true,
     "__CLIENT__": true,

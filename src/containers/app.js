@@ -1,13 +1,16 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default () => (
   <div>
     <p>Hello world</p>
     <ul>
-      <li>1</li>
-      <li>2</li>
-      <li>3</li>
+      <li>
+        <Link to="/home">Link</Link>
+      </li>
+      <li>
+        <Link to="/page1">Link</Link>
+      </li>
     </ul>
-    <a> test</a>
   </div>
 );

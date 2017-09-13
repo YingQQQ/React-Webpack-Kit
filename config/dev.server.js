@@ -7,8 +7,9 @@ const app = new Koa();
 const compiler = webpack(config);
 
 const hotPort = process.env.PORT || 8080;
+
 const dev = {
-  noInfo: true,
+  noInfo: false,
   quiet: true,
   publicPath: config.output.publicPath,
   headers: {
