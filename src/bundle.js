@@ -24,7 +24,6 @@ class Bundle extends Component {
     });
     props.load((mod) => {
       this.setState({
-
         mod: mod.default ? mod.default : mod
       });
     });

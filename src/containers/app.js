@@ -6,10 +6,13 @@ export default () => (
     <p>Hello world</p>
     <ul>
       <li>
-        <Link to="/home">Link</Link>
+        <Link to="/home">Link Home</Link>
       </li>
       <li>
-        <Link to="/page1">Link</Link>
+        <Link to="/page1">Link Page1</Link>
+      </li>
+      <li>
+        <Link to="/page3">Link NoMatch</Link>
       </li>
     </ul>
   </div>
