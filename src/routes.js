@@ -2,10 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Loadable from 'react-loadable';
 import PropTypes from 'prop-types';
-// import App from './containers/App';
-// import Home from './containers/Home';
-// import Page1 from './containers/Page1';
-// import NoMatch from './containers/NoMatch';
+
 
 const MyLoadingComponent = ({ isLoading, error }) => {
   // Handle the loading state
