@@ -6,7 +6,7 @@ import config from '../webpack.config';
 const app = new Koa();
 const compiler = webpack(config);
 
-const hotPort = process.env.PORT || 8080;
+const hotPort = process.env.PORT || 8090;
 
 const dev = {
   noInfo: false,

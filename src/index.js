@@ -30,3 +30,4 @@ renderDom(Routes);
 if (module.hot) {
   module.hot.accept('./routes', () => renderDom(Routes));
 }
+

@@ -14,7 +14,6 @@ console.log(Paths.Style);
 const IS_DEV = process.env.NODE_ENV === 'development';
 const pkg = require('./package.json');
 
-console.log(`process.env.NODE_ENV:${IS_DEV}`);
 
 const babelConfig = Object.assign({}, pkg.babelConfig, {
   babelrc: false,
@@ -97,7 +96,8 @@ const config = {
       inject: false,
       favicon: './apple-icon-60x60.png',
       mobile: true,
-    })
+    }),
+    new webpack.optimize.ModuleConcatenationPlugin()
   ]
 };
 if (IS_DEV) {
@@ -105,7 +105,7 @@ if (IS_DEV) {
   const keys = Object.keys(config.entry);
   keys.forEach((key) => {
     const currentItem = config.entry[key];
-    currentItem.unshift('webpack-hot-middleware/client?http://localhost:8080',
+    currentItem.unshift('webpack-hot-middleware/client?http://localhost:8090',
       'webpack/hot/only-dev-server');
     if (key === 'app') {
       currentItem.unshift('react-hot-loader/patch');
