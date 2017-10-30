@@ -1,6 +1,7 @@
 import Koa from 'koa';
 import middleware from 'koa-webpack';
 import webpack from 'webpack';
+import logger from 'koa-logger';
 import config from '../webpack.config';
 
 const app = new Koa();
@@ -19,10 +20,12 @@ const dev = {
     colors: true
   }
 };
+app.use(logger());
 app.use(middleware({
   compiler,
   dev
 }));
+
 
 app.listen(hotPort, () => {
   console.info(`==> 🌎 Listening on port ${hotPort}. Open up http://localhost:${hotPort}/ in your browser.`);
