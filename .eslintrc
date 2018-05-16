@@ -20,6 +20,10 @@
     "indent": [2, 2, {
       "SwitchCase": 1
     }],
+    "linebreak-style": [
+      "error",
+      "windows"
+    ],
     "no-console": 0,
     "no-alert": 0,
     "jsx-a11y/href-no-hash": "off",

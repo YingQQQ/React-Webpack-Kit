@@ -4,7 +4,7 @@ import SubHome from './SubHome';
 
 export default () => (
   <div>
-    <p>HomePage!</p>
+    <p>HomePage</p>
     <Link to="/home/subHome">Link Home</Link>
     <Link to="/">Home</Link>
     <Switch>
