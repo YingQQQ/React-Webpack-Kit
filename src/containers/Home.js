@@ -1,5 +1,6 @@
-import React from 'react';
 import { Switch, Route, Link } from 'react-router-dom';
+import React from 'react';
+
 import SubHome from './SubHome';
 
 export default () => (

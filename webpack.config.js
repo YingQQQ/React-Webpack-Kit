@@ -1,15 +1,14 @@
 const {
   resolve
 } = require('path');
-const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
+
 const Paths = require('./config/path-help');
 const htmlTemplate = require('html-webpack-template');
 
-console.log(Paths.App);
-console.log(Paths.Style);
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 const pkg = require('./package.json');

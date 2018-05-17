@@ -4,6 +4,9 @@ module.exports = {
   plugins: [
     require('postcss-cssnext'),
     require('postcss-import'),
-    require('precss'),
-  ],
+    require('autoprefixer')({
+      browsers: ['last 4 versions'],
+      flexbox: 'no-2009'
+    })
+  ]
 };

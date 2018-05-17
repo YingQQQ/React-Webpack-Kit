@@ -1,7 +1,8 @@
 import Koa from 'koa';
+import logger from 'koa-logger';
 import middleware from 'koa-webpack';
 import webpack from 'webpack';
-import logger from 'koa-logger';
+
 import config from '../webpack.config';
 
 const app = new Koa();
