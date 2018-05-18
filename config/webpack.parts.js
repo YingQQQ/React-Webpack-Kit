@@ -1,21 +1,23 @@
 const { join } = require('path');
 
 const IS_DEV = process.env.NODE_ENV === 'development';
-const pkg = require('./package.json');
+const pkg = require('../package.json');
 
 const babelConfig = Object.assign({}, pkg.babelConfig, {
+  // 没有.bablerc文件
   babelrc: false,
+  // 在dev时设置成true来调用缓存，提高性能
   cacheDirectory: IS_DEV,
   presets: pkg.babelConfig.presets.map(
     key =>
-      (key === 'env'
+      (key === '@babel/preset-env'
         ? [
-          'env',
+          '@babel/preset-env',
           {
             targets: {
               browsers: ['last 2 versions', 'safari >= 7']
             },
-            modules: false
+            esmodules: false
           }
         ]
         : key)
@@ -23,7 +25,10 @@ const babelConfig = Object.assign({}, pkg.babelConfig, {
 });
 
 const PATHS = {
-  app: join(__dirname, 'src'),
-  build: join(__dirname, 'dist')
+  app: join(__dirname, '../src'),
+  build: join(__dirname, '../dist')
 };
 
+const config = {
+
+};

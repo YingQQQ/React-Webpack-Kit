@@ -15,7 +15,9 @@ const pkg = require('./package.json');
 
 
 const babelConfig = Object.assign({}, pkg.babelConfig, {
+  // 没有.bablerc文件
   babelrc: false,
+  // 在dev时设置成true来调用缓存，提高性能
   cacheDirectory: IS_DEV,
   presets: pkg.babelConfig.presets.map(key => (key === 'env' ? ['env', {
     targets: {
