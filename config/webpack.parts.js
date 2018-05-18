@@ -1,7 +1,10 @@
 const { join } = require('path');
 
-const IS_DEV = process.env.NODE_ENV === 'development';
 const pkg = require('../package.json');
+
+const IS_DEV = process.env.NODE_ENV === 'development';
+const browsers = ['>1%', 'last 4 versions', 'Firefox ESR', 'not ie < 9'];
+
 
 const babelConfig = Object.assign({}, pkg.babelConfig, {
   // 没有.bablerc文件
@@ -15,9 +18,9 @@ const babelConfig = Object.assign({}, pkg.babelConfig, {
           '@babel/preset-env',
           {
             targets: {
-              browsers: ['last 2 versions', 'safari >= 7']
+              browsers
             },
-            esmodules: false
+            modules: false
           }
         ]
         : key)
@@ -30,5 +33,13 @@ const PATHS = {
 };
 
 const config = {
-
+  mode: IS_DEV ? 'development' : 'production',
+  entry: PATHS.app,
+  output: {
+    path: PATHS.build,
+    filename: 
+  }
 };
+
+
+export default config;
