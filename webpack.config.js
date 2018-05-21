@@ -1,33 +1,36 @@
-const {
-  resolve
-} = require('path');
+const { resolve } = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 
 const Paths = require('./config/path-help');
 const htmlTemplate = require('html-webpack-template');
 
-
 const IS_DEV = process.env.NODE_ENV === 'development';
 const pkg = require('./package.json');
-
 
 const babelConfig = Object.assign({}, pkg.babelConfig, {
   // 没有.bablerc文件
   babelrc: false,
   // 在dev时设置成true来调用缓存，提高性能
   cacheDirectory: IS_DEV,
-  presets: pkg.babelConfig.presets.map(key => (key === 'env' ? ['env', {
-    targets: {
-      browsers: ['last 2 versions', 'safari >= 7']
-    },
-    modules: false
-  }] : key))
+  presets: pkg.babelConfig.presets.map(
+    key =>
+      (key === 'env'
+        ? [
+          'env',
+          {
+            targets: {
+              browsers: ['last 2 versions', 'safari >= 7']
+            },
+            modules: false
+          }
+        ]
+        : key)
+  )
 });
 
-let stylesLoader = [
+const stylesLoader = [
   'style-loader',
   {
     loader: 'css-loader',
@@ -42,26 +45,15 @@ let stylesLoader = [
         path: './postcss.config.js'
       }
     }
-  },
+  }
 ];
-if (!IS_DEV) {
-  const fallback = stylesLoader.shift();
 
-  stylesLoader = ExtractTextPlugin.extract({
-    fallback,
-    use: stylesLoader
-  });
-}
 
 const config = {
   devtool: IS_DEV ? 'eval-source-map' : 'source-map',
   entry: {
-    app: [
-      Paths.App
-    ],
-    style: [
-      Paths.Style
-    ]
+    app: [Paths.App],
+    style: [Paths.Style]
   },
   output: {
     path: Paths.Build,
@@ -70,24 +62,29 @@ const config = {
     publicPath: IS_DEV ? '/' : './'
   },
   module: {
-    rules: [{
-      test: /\.(js|jsx)$/,
-      include: resolve(__dirname, './src'),
-      loader: 'babel-loader',
-      options: babelConfig
-    }, {
-      test: /\.s?css$/,
-      use: stylesLoader
-    }, {
-      test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)$/,
-      loader: 'url-loader',
-      options: {
-        limit: 10000
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        include: resolve(__dirname, './src'),
+        loader: 'babel-loader',
+        options: babelConfig
+      },
+      {
+        test: /\.s?css$/,
+        use: stylesLoader
+      },
+      {
+        test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)$/,
+        loader: 'url-loader',
+        options: {
+          limit: 10000
+        }
+      },
+      {
+        test: /\.(eot|ttf|wav|mp3)$/,
+        loader: 'file-loader'
       }
-    }, {
-      test: /\.(eot|ttf|wav|mp3)$/,
-      loader: 'file-loader'
-    }]
+    ]
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -96,7 +93,7 @@ const config = {
       appMountId: 'app',
       inject: false,
       favicon: './apple-icon-60x60.png',
-      mobile: true,
+      mobile: true
     }),
     new webpack.optimize.ModuleConcatenationPlugin()
   ]
@@ -106,35 +103,36 @@ if (IS_DEV) {
   const keys = Object.keys(config.entry);
   keys.forEach((key) => {
     const currentItem = config.entry[key];
-    currentItem.unshift('webpack-hot-middleware/client?http://localhost:8090',
-      'webpack/hot/only-dev-server');
+    currentItem.unshift(
+      'webpack-hot-middleware/client?http://localhost:8090',
+      'webpack/hot/only-dev-server'
+    );
     if (key === 'app') {
       currentItem.unshift('react-hot-loader/patch');
     }
   });
   config.plugins.push(
     new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.HotModuleReplacementPlugin());
+    new webpack.HotModuleReplacementPlugin()
+  );
 } else {
   config.plugins.push(
     new CleanWebpackPlugin([Paths.Build], {
       root: process.cwd()
     }),
     new webpack.optimize.CommonsChunkPlugin({
-      names: [
-        ['react', 'react-dom'], 'manifest'
-      ],
+      names: [['react', 'react-dom'], 'manifest'],
       minChunks: Infinity
     }),
     new webpack.LoaderOptionsPlugin({
       minimize: true
     }),
-    new ExtractTextPlugin('[name].[chunkhash].css'),
     new webpack.optimize.UglifyJsPlugin({
       sourceMap: true,
       compress: {
-        warnings: false,
+        warnings: false
       }
-    }));
+    })
+  );
 }
 module.exports = config;
