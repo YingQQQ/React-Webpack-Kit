@@ -2,8 +2,8 @@ const { join } = require('path');
 const merge = require('webpack-merge');
 const webpack = require('webpack');
 
-const parts = require('./webpack.parts');
-const pkg = require('../package.json');
+const parts = require('./config/webpack.parts');
+const pkg = require('./package.json');
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 const browsers = ['>1%', 'last 4 versions', 'Firefox ESR', 'not ie < 9'];
@@ -14,7 +14,6 @@ const PATHS = {
   app: join(__dirname, 'src'),
   build: join(__dirname, 'dist')
 };
-
 const babelConfig = Object.assign({}, pkg.babelConfig, {
   // 没有.bablerc文件
   babelrc: false,
@@ -36,7 +35,6 @@ const babelConfig = Object.assign({}, pkg.babelConfig, {
   )
 });
 
-
 const commonConfig = merge([
   {
     output: {
@@ -48,26 +46,25 @@ const commonConfig = merge([
     exclude: /node_modules/,
     options: babelConfig
   }),
-  parts.loadImages(),
-  parts.loadFonts(),
+  // parts.loadImage(),
+  // parts.loadFonts(),
   parts.loadCSS({
     include: PATHS.app,
     exclude: /node_modules/
-  }),
+  })
 ]);
-
 
 const developmentConfig = merge([
   {
     entry: [
-      'webpack-hot-middleware/client?reload=true',
+      // 'webpack-hot-middleware/client?reload=true',
       PATHS.app
     ]
   },
   {
     output: {
       filename: '[name].js',
-      chunkFilename: '[chunkhash].js',
+      chunkFilename: '[chunkhash].js'
     }
   },
   parts.generateSourceMaps(),
@@ -76,7 +73,7 @@ const developmentConfig = merge([
     plugins: [
       // 开启热更新
       new webpack.HotModuleReplacementPlugin(),
-      new webpack.NoEmitOnErrorsPlugin(),
+      new webpack.NoEmitOnErrorsPlugin()
     ]
   }
 ]);
@@ -101,7 +98,7 @@ const productionConfig = merge([
   },
   parts.clean(PATHS.build),
   parts.minifyJavaScript(),
-  parts.minifyCSS(),
+  parts.minifyCss(),
   parts.extractCSS({
     use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
   }),
@@ -128,7 +125,7 @@ const productionConfig = merge([
   }
 ]);
 
-module.exports = () => {
+module.exports = (mode) => {
   const pages = [
     parts.page({
       title: 'My App',
@@ -138,23 +135,27 @@ module.exports = () => {
       chunks: ['app', 'manifest', 'vendor'],
       favicon: '../apple-icon-60x60.png',
       mobile: true,
-      meta: [{
-        name: 'apple-mobile-web-app-capable',
-        content: 'yes'
-      }, {
-        name: 'x5-fullscreen',
-        content: true
-      }, {
-        name: 'full-screen',
-        content: 'yes'
-      }, {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui'
-      }]
+      meta: [
+        {
+          name: 'apple-mobile-web-app-capable',
+          content: 'yes'
+        },
+        {
+          name: 'x5-fullscreen',
+          content: true
+        },
+        {
+          name: 'full-screen',
+          content: 'yes'
+        },
+        {
+          name: 'viewport',
+          content:
+            'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui'
+        }
+      ]
     })
   ];
-  const mode = IS_DEV ? 'develpoment' : 'production';
-  const config = IS_DEV ? developmentConfig : productionConfig;
-
+  const config = mode === 'production' ? productionConfig : developmentConfig;
   return merge([commonConfig, config, { mode }].concat(pages));
 };

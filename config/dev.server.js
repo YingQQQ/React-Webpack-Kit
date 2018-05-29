@@ -4,11 +4,10 @@ import middleware from 'koa-webpack';
 import webpack from 'webpack';
 
 import config from '../webpack.config';
+import { hotPort } from './config';
 
 const app = new Koa();
 const compiler = webpack(config);
-
-const hotPort = process.env.PORT || 8090;
 
 const dev = {
   noInfo: false,
@@ -22,12 +21,15 @@ const dev = {
   }
 };
 app.use(logger());
-app.use(middleware({
-  compiler,
-  dev
-}));
-
+app.use(
+  middleware({
+    compiler,
+    dev
+  })
+);
 
 app.listen(hotPort, () => {
-  console.info(`==> 🌎 Listening on port ${hotPort}. Open up http://localhost:${hotPort}/ in your browser.`);
+  console.info(
+    `==> 🌎 Listening on port ${hotPort}. Open up http://localhost:${hotPort}/ in your browser.`
+  );
 });

@@ -29,7 +29,7 @@ exports.page = ({
   ...others
 } = {}) => ({
   entry,
-  plugin: [
+  plugins: [
     new HtmlWebpackPlugin({
       chunks,
       filename: `${path && `${path}/`}index.html`,
@@ -93,7 +93,7 @@ exports.loadJavaScript = ({ include, exclude, options } = {}) => ({
         test: /\.(js|jsx)$/,
         include,
         exclude,
-        use: 'babel-loader',
+        loader: 'babel-loader',
         options
       }
     ]
@@ -150,7 +150,7 @@ exports.extractCSS = ({ include, exclude, use = [] }) => {
  * loading CSS/ Css编译
  * @param {Object} include | exclude, see webpack Document
  */
-exports.loadCSS = ({ include, exclude } = {}) => ({
+exports.loadCSS = ({ include, exclude, path } = {}) => ({
   module: {
     rules: [
       {
@@ -169,7 +169,7 @@ exports.loadCSS = ({ include, exclude } = {}) => ({
             loader: 'postcss-loader',
             options: {
               config: {
-                path: '../postcss.config.js'
+                path
               }
             }
           },
@@ -183,39 +183,61 @@ exports.loadCSS = ({ include, exclude } = {}) => ({
 /**
  *压缩css,用于PROD
  */
-exports.minifyCss = () => ({
-  minimizer: [new OptimizeCSSAssetsPlugin({})]
+exports.minifyCSS = () => ({
+  optimization: {
+    minimizer: [new OptimizeCSSAssetsPlugin({})]
+  }
 });
 
 /**
  * 字体加载/loading Fonts
  */
 exports.loadFonts = () => ({
-  test: /\.(eot|svg|otf|ttf|woff|woff2)$/,
-  use: 'file-loader'
+  module: {
+    rules: [
+      {
+        test: /\.(eot|svg|otf|ttf|woff|woff2)$/,
+        use: 'file-loader'
+      }
+    ]
+  }
 });
 
 /**
  * 图片加载/loading Images
  */
 exports.loadImage = () => ({
-  test: /\.(jpg|png|gif)$/,
-  use: [
-    'file-loader',
-    {
-      loader: 'image-webpack-loader',
-      options: {
-        progressive: true,
-        optimizationLevel: 7,
-        interlaced: false,
-        pngquant: {
-          quality: '65-90',
-          speed: 4
-        }
+  module: {
+    rules: [
+      {
+        test: /\.(jpg|png|gif)$/,
+        use: [
+          'file-loader',
+          {
+            loader: 'image-webpack-loader',
+            options: {
+              progressive: true,
+              optimizationLevel: 7,
+              interlaced: false,
+              pngquant: {
+                quality: '65-90',
+                speed: 4
+              }
+            }
+          }
+        ]
       }
-    }
+    ]
+  }
+});
+
+exports.loadHrm = ({
+  plugin: [
+    new webpack.NamedModulesPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
   ]
 });
+
 
 /**
  * 渐进增强

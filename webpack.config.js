@@ -1,14 +1,20 @@
-const { resolve } = require('path');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const webpack = require('webpack');
+const { join, resolve } = require('path');
+const merge = require('webpack-merge');
 
-const Paths = require('./config/path-help');
-const htmlTemplate = require('html-webpack-template');
-
-const IS_DEV = process.env.NODE_ENV === 'development';
+const parts = require('./config/webpack.parts');
 const pkg = require('./package.json');
 
+const IS_DEV = process.env.NODE_ENV === 'development';
+const browsers = ['>1%', 'last 4 versions', 'Firefox ESR', 'not ie < 9'];
+const PUBLIC_PATH = IS_DEV ? '/' : './';
+
+const PATHS = {
+  app: join(__dirname, 'src'),
+  build: join(__dirname, 'dist'),
+  favicon: join(__dirname, 'apple-icon-60x60.png'),
+  postcss: resolve(__dirname, 'config', 'postcss.config'),
+  recordsPath: join(__dirname, 'records.json')
+};
 const babelConfig = Object.assign({}, pkg.babelConfig, {
   // 没有.bablerc文件
   babelrc: false,
@@ -16,12 +22,12 @@ const babelConfig = Object.assign({}, pkg.babelConfig, {
   cacheDirectory: IS_DEV,
   presets: pkg.babelConfig.presets.map(
     key =>
-      (key === 'env'
+      (key === '@babel/preset-env'
         ? [
-          'env',
+          '@babel/preset-env',
           {
             targets: {
-              browsers: ['last 2 versions', 'safari >= 7']
+              browsers
             },
             modules: false
           }
@@ -30,109 +36,120 @@ const babelConfig = Object.assign({}, pkg.babelConfig, {
   )
 });
 
-const stylesLoader = [
-  'style-loader',
+const commonConfig = merge([
   {
-    loader: 'css-loader',
-    options: {
-      importLoaders: 1
+    mode: IS_DEV ? 'development' : 'production',
+  },
+  {
+    output: {
+      publicPath: PUBLIC_PATH
+    }
+  },
+  parts.loadCSS({
+    include: PATHS.app,
+    exclude: /node_modules/,
+    path: PATHS.postcss
+  }),
+  parts.loadJavaScript({
+    include: PATHS.app,
+    exclude: /node_modules/,
+    options: babelConfig
+  }),
+  parts.loadFonts(),
+  parts.loadImage(),
+]);
+
+const developmentConfig = merge([
+  {
+    output: {
+      filename: '[name].js',
+      chunkFilename: '[chunkhash].js'
+    }
+  },
+  parts.generateSourceMaps,
+  parts.setFreeVariable('__DEVELOPMENT__', 'true'),
+]);
+
+
+const productionConfig = merge([
+  {
+    performance: {
+      hints: 'warning',
+      maxEntrypointSize: 150000,
+      maxAssetSize: 450000
     }
   },
   {
-    loader: 'postcss-loader',
-    options: {
-      config: {
-        path: './postcss.config.js'
+    recordsPath: PATHS.recordsPath,
+    output: {
+      chunkFilename: '[name].[chunkhash:4].js',
+      filename: '[name].[chunkhash:4].js'
+    }
+  },
+  parts.clean(PATHS.build),
+  parts.minifyJavaScript(),
+  parts.minifyCSS(),
+  parts.extractCSS({
+    use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
+  }),
+  // parts.loadPWA({
+  //   PUBLIC_PATH
+  // }),
+  {
+    optimization: {
+      minimize: true,
+      splitChunks: {
+        cacheGroups: {
+          vendors: {
+            test: /node_modules/,
+            name: 'vendors',
+            enforce: true,
+            chunks: 'initial'
+          }
+        }
+      },
+      runtimeChunk: {
+        name: 'manifest'
       }
     }
   }
-];
+]);
 
-
-const config = {
-  devtool: IS_DEV ? 'eval-source-map' : 'source-map',
-  entry: {
-    app: [Paths.App],
-    style: [Paths.Style]
-  },
-  output: {
-    path: Paths.Build,
-    chunkFilename: '[chunkhash].js',
-    filename: IS_DEV ? '[name].js' : '[name].[chunkhash].js',
-    publicPath: IS_DEV ? '/' : './'
-  },
-  module: {
-    rules: [
+const pages = [
+  parts.page({
+    entry: {
+      // webpack-dev-server need Aarry entry
+      app: [
+        PATHS.app
+      ]
+    },
+    title: 'Webpack demo',
+    chunks: ['app', 'manifest', 'vendor'],
+    inject: false,
+    appMountId: 'app',
+    favicon: './apple-icon-60x60.png',
+    mobile: true,
+    meta: [
       {
-        test: /\.(js|jsx)$/,
-        include: resolve(__dirname, './src'),
-        loader: 'babel-loader',
-        options: babelConfig
+        name: 'apple-mobile-web-app-capable',
+        content: 'yes'
       },
       {
-        test: /\.s?css$/,
-        use: stylesLoader
+        name: 'x5-fullscreen',
+        content: true
       },
       {
-        test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)$/,
-        loader: 'url-loader',
-        options: {
-          limit: 10000
-        }
+        name: 'full-screen',
+        content: 'yes'
       },
       {
-        test: /\.(eot|ttf|wav|mp3)$/,
-        loader: 'file-loader'
+        name: 'viewport',
+        content:
+          'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui'
       }
     ]
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: htmlTemplate,
-      title: '项目名称',
-      appMountId: 'app',
-      inject: false,
-      favicon: './apple-icon-60x60.png',
-      mobile: true
-    }),
-    new webpack.optimize.ModuleConcatenationPlugin()
-  ]
-};
-if (IS_DEV) {
-  babelConfig.plugins.unshift('react-hot-loader/babel');
-  const keys = Object.keys(config.entry);
-  keys.forEach((key) => {
-    const currentItem = config.entry[key];
-    currentItem.unshift(
-      'webpack-hot-middleware/client?http://localhost:8090',
-      'webpack/hot/only-dev-server'
-    );
-    if (key === 'app') {
-      currentItem.unshift('react-hot-loader/patch');
-    }
-  });
-  config.plugins.push(
-    new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.HotModuleReplacementPlugin()
-  );
-} else {
-  config.plugins.push(
-    new CleanWebpackPlugin([Paths.Build], {
-      root: process.cwd()
-    }),
-    new webpack.optimize.CommonsChunkPlugin({
-      names: [['react', 'react-dom'], 'manifest'],
-      minChunks: Infinity
-    }),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: {
-        warnings: false
-      }
-    })
-  );
-}
-module.exports = config;
+  }),
+];
+const config = IS_DEV ? developmentConfig : productionConfig;
+
+module.exports = merge([commonConfig, config].concat(pages));

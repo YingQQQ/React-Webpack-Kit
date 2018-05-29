@@ -1,7 +1,10 @@
-import React from 'react';
+import { hot } from 'react-hot-loader';
 import { Link } from 'react-router-dom';
+import React from 'react';
 
-export default () => (
+import '../app.scss';
+
+const App = () => (
   <div>
     <p>Hello world</p>
     <ul>
@@ -9,7 +12,7 @@ export default () => (
         <Link to="/home">Link Home</Link>
       </li>
       <li>
-        <Link to="/page1">Link Page1</Link>
+        <Link to="/page1">Link Page</Link>
       </li>
       <li>
         <Link to="/page3">Link NoMatch</Link>
@@ -17,3 +20,5 @@ export default () => (
     </ul>
   </div>
 );
+
+export default hot(module)(App);
