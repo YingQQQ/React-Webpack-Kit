@@ -45,11 +45,6 @@ const commonConfig = merge([
       publicPath: PUBLIC_PATH
     }
   },
-  parts.loadCSS({
-    include: PATHS.app,
-    exclude: /node_modules/,
-    path: PATHS.postcss
-  }),
   parts.loadJavaScript({
     include: PATHS.app,
     exclude: /node_modules/,
@@ -66,6 +61,11 @@ const developmentConfig = merge([
       chunkFilename: '[chunkhash].js'
     }
   },
+  parts.loadCSS({
+    include: PATHS.app,
+    exclude: /node_modules/,
+    path: PATHS.postcss
+  }),
   parts.generateSourceMaps,
   parts.setFreeVariable('__DEVELOPMENT__', 'true'),
 ]);
@@ -83,14 +83,17 @@ const productionConfig = merge([
     recordsPath: PATHS.recordsPath,
     output: {
       chunkFilename: '[name].[chunkhash:4].js',
-      filename: '[name].[chunkhash:4].js'
+      filename: '[name].[chunkhash:4].js',
+      globalObject: 'this'
     }
   },
   parts.clean(PATHS.build),
   parts.minifyJavaScript(),
   parts.minifyCSS(),
   parts.extractCSS({
-    use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
+    include: PATHS.app,
+    exclude: /node_modules/,
+    path: PATHS.postcss
   }),
   // parts.loadPWA({
   //   PUBLIC_PATH

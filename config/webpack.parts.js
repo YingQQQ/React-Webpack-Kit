@@ -7,6 +7,27 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const OfflinePlugin = require('offline-plugin');
 const webpack = require('webpack');
 
+
+const styleOptions = path => ([
+  'style-loader',
+  {
+    loader: 'css-loader',
+    options: {
+      importLoaders: 1
+    }
+  },
+  {
+    loader: 'postcss-loader',
+    options: {
+      config: {
+        path
+      }
+    }
+  },
+  'sass-loader'
+]);
+
+
 /**
  * 页面配置，入口文件，chunks命名，favicon文件路径，生成index配置信息
  * @param {Object} param0
@@ -114,11 +135,12 @@ exports.generateSourceMaps = () => ({
  * 提取样式/Separating CSS
  * @param {String} include | exclude | use, Module.rules, see Webpack Document
  */
-exports.extractCSS = ({ include, exclude, use = [] }) => {
+exports.extractCSS = ({ include, exclude, path }) => {
   const plugin = new MiniCssExtractPlugin({
     filename: '[name].[contenthash:4].css'
   });
-
+  const styleLoder = styleOptions(path);
+  styleLoder.shift();
   return {
     module: {
       rules: [
@@ -126,7 +148,7 @@ exports.extractCSS = ({ include, exclude, use = [] }) => {
           test: /\.s?css$/,
           include,
           exclude,
-          use: [MiniCssExtractPlugin.loader].concat(use)
+          use: [MiniCssExtractPlugin.loader].concat(styleLoder)
         }
       ]
     },
@@ -157,24 +179,7 @@ exports.loadCSS = ({ include, exclude, path } = {}) => ({
         test: /\.s?css$/,
         include,
         exclude,
-        use: [
-          'style-loader',
-          {
-            loader: 'css-loader',
-            options: {
-              importLoaders: 1
-            }
-          },
-          {
-            loader: 'postcss-loader',
-            options: {
-              config: {
-                path
-              }
-            }
-          },
-          'sass-loader'
-        ]
+        use: styleOptions(path)
       }
     ]
   }
