@@ -9,7 +9,7 @@ const App = () => (
     <p>Hello world</p>
     <ul>
       <li>
-        <Link to="/home">Link Home</Link>
+        <Link to="/home">Link Home!</Link>
       </li>
       <li>
         <Link to="/page1">Link Page</Link>
