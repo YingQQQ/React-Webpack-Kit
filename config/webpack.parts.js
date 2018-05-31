@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const UglifyWebpackPlugin = require('uglifyjs-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const OfflinePlugin = require('offline-plugin');
+const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
 const webpack = require('webpack');
 
 
@@ -249,19 +249,25 @@ exports.loadHrm = ({
  * @param {Object}
  * @param {String} PUBLIC_PATH
  */
-exports.loadPWA = ({
-  PUBLIC_PATH,
-} = {}) => ({
+exports.loadPWA = () => ({
   plugins: [
-    new OfflinePlugin({
-      relativePaths: false,
-      publicPath: PUBLIC_PATH,
-      caches: {
-        main: [':rest:'],
-        additional: ['*.chunk.js'],
+    new SWPrecacheWebpackPlugin({
+      // 默认情况下缓存参数会被加入到请求中,用于填充缓存,确保响应是未过期的
+      // 如果URL已经被webpack哈希,则表示正确
+      // 如果是过期的,则清除缓存
+      dontCacheBustUrlsMatching: /\.\w{8}\./,
+      filename: 'service-worker.js',
+      logger(message) {
+        if (message.indexOf('Total precache size is') === 0) {
+          return;
+        }
+        if (message.indexOf('Skipping static resource') === 0) {
+          return;
+        }
+        console.log(message);
       },
-      safeToUseOptionalCaches: true,
-      AppCache: false,
+      minify: true,
+      staticFileGlobsIgnorePatterns: [/\.map$/, /asset-manifest\.json$/],
     }),
   ]
 });

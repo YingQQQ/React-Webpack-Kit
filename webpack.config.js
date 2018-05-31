@@ -1,20 +1,13 @@
-const { join, resolve } = require('path');
 const merge = require('webpack-merge');
 
 const parts = require('./config/webpack.parts');
 const pkg = require('./package.json');
+const { PATHS } = require('./config/path-help');
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 const browsers = ['>1%', 'last 4 versions', 'Firefox ESR', 'not ie < 9'];
 const PUBLIC_PATH = IS_DEV ? '/' : './';
 
-const PATHS = {
-  app: join(__dirname, 'src'),
-  build: join(__dirname, 'dist'),
-  favicon: join(__dirname, 'apple-icon-60x60.png'),
-  postcss: resolve(__dirname, 'config', 'postcss.config'),
-  recordsPath: join(__dirname, 'records.json')
-};
 const babelConfig = Object.assign({}, pkg.babelConfig, {
   // 没有.bablerc文件
   babelrc: false,
@@ -43,6 +36,11 @@ const commonConfig = merge([
   {
     output: {
       publicPath: PUBLIC_PATH
+    }
+  },
+  {
+    resolve: {
+      extensions: ['.js', '.json', '.jsx']
     }
   },
   parts.loadJavaScript({
@@ -95,9 +93,7 @@ const productionConfig = merge([
     exclude: /node_modules/,
     path: PATHS.postcss
   }),
-  // parts.loadPWA({
-  //   PUBLIC_PATH
-  // }),
+  parts.loadPWA(),
   {
     optimization: {
       minimize: true,

@@ -1,10 +1,12 @@
+import historyFallback from 'koa2-history-api-fallback';
 import Koa from 'koa';
 import logger from 'koa-logger';
 import middleware from 'koa-webpack';
 import webpack from 'webpack';
 
+import { hotPort } from './path-help';
+
 import config from '../webpack.config';
-import { hotPort } from './config';
 
 const app = new Koa();
 const compiler = webpack(config);
@@ -20,6 +22,7 @@ const dev = {
     colors: true
   }
 };
+app.use(historyFallback());
 app.use(logger());
 app.use(
   middleware({
