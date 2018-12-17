@@ -1,17 +1,15 @@
-import { ConnectedRouter } from 'react-router-redux';
+import { ConnectedRouter } from 'connected-react-router';
 import { Provider } from 'react-redux';
 import { render } from 'react-dom';
-import createHistory from 'history/createBrowserHistory';
-import injectTapEventPlugin from 'react-tap-event-plugin';
 import React from 'react';
 
 import configureStore from './store/configuerStore';
+import history from './utils/history';
 import Routes from './routes';
 
-injectTapEventPlugin();
 const rootEl = window.document.getElementById('app');
-const store = configureStore();
-const history = createHistory();
+const initialState = {};
+const store = configureStore(initialState, history);
 
 render(
   <Provider store={store}>

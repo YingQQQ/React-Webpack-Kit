@@ -1,35 +1,37 @@
 import historyFallback from 'koa2-history-api-fallback';
 import Koa from 'koa';
 import logger from 'koa-logger';
-import middleware from 'koa-webpack';
+import koaWebpack from 'koa-webpack';
 import webpack from 'webpack';
-
-import { hotPort } from './path-help';
-
+import serve from 'koa-static';
+import { hotPort, PATHS } from './path-help';
 import config from '../webpack.config';
 
 const app = new Koa();
-const compiler = webpack(config);
-
-const dev = {
-  noInfo: false,
-  quiet: true,
-  publicPath: config.output.publicPath,
-  headers: {
-    'Access-Control-Allow-Origin': '*'
-  },
-  stats: {
-    colors: true
-  }
-};
+const isProd = process.env.NODE_ENV === 'production';
+app.use(serve(PATHS.build));
 app.use(historyFallback());
 app.use(logger());
-app.use(
-  middleware({
-    compiler,
-    dev
-  })
-);
+
+if (!isProd) {
+  const compiler = webpack(config);
+  const devMiddleware = {
+    logLevel: 'warn',
+    publicPath: config.output.publicPath,
+    silent: true,
+    stats: {
+      colors: true
+    },
+    noInfo: false,
+    quiet: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    },
+  };
+  koaWebpack({ compiler, devMiddleware }).then((middleware) => {
+    app.use(middleware);
+  });
+}
 
 app.listen(hotPort, () => {
   console.info(

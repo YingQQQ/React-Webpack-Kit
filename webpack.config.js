@@ -6,7 +6,7 @@ const { PATHS } = require('./config/path-help');
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 const browsers = ['>1%', 'last 4 versions', 'Firefox ESR', 'not ie < 9'];
-const PUBLIC_PATH = IS_DEV ? '/' : './';
+const PUBLIC_PATH = IS_DEV ? '/' : '/';
 
 const babelConfig = Object.assign({}, pkg.babelConfig, {
   // 没有.bablerc文件
@@ -97,20 +97,32 @@ const productionConfig = merge([
   {
     optimization: {
       minimize: true,
+      nodeEnv: 'production',
+      sideEffects: true,
+      concatenateModules: true,
       splitChunks: {
+        chunks: 'all',
+        minSize: 30000,
+        minChunks: 1,
+        maxAsyncRequests: 5,
+        maxInitialRequests: 3,
+        name: true,
         cacheGroups: {
-          vendors: {
-            test: /node_modules/,
-            name: 'vendors',
+          commons: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendor',
+            chunks: 'all',
+          },
+          main: {
+            chunks: 'all',
+            minChunks: 2,
+            reuseExistingChunk: true,
             enforce: true,
-            chunks: 'initial'
-          }
-        }
+          },
+        },
       },
-      runtimeChunk: {
-        name: 'manifest'
-      }
-    }
+      runtimeChunk: true,
+    },
   }
 ]);
 
@@ -123,7 +135,6 @@ const pages = [
       ]
     },
     title: 'Webpack demo',
-    chunks: ['app', 'manifest', 'vendor'],
     inject: false,
     appMountId: 'app',
     favicon: './apple-icon-60x60.png',

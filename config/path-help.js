@@ -1,6 +1,6 @@
 const { join, resolve } = require('path');
 
-const hotPort = process.env.PORT || 8001;
+const hotPort = process.env.PORT || 8098;
 const PATHS = {
   app: join(__dirname, '../', 'src'),
   build: join(__dirname, '../', 'dist'),
